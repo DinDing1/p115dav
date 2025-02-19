@@ -11,10 +11,15 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
+
+# 复制项目文件
 COPY . .
 
-RUN pip install --no-cache-dir -r requirements.txt .
+# 仅安装 requirements 中的依赖
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 8000
 
+# 直接运行模块（无需安装项目）
 CMD ["python", "-m", "p115dav", "--cookies-path", "/app/115-cookies.txt"]
