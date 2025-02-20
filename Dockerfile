@@ -1,9 +1,6 @@
 # 使用 Python 3.13.2-alpine 镜像
 FROM python:3.13.2-alpine
 
-# 设置阿里云镜像源
-#RUN pip config set global.index-url https://mirrors.aliyun.com/pypi/simple
-
 # 安装编译所需的工具和库
 RUN apk update && apk add --no-cache \
     build-base \
@@ -31,4 +28,4 @@ EXPOSE 8050
 VOLUME ["/app/cookies"]
 
 # 启动命令
-CMD ["python", "-m", "p115dav", "--host", "127.0.0.1", "--port", "8050"]
+CMD ["python", "-m", "p115dav", "--host", "0.0.0.0", "--port", "8050"]
