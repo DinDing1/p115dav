@@ -30,6 +30,9 @@ RUN poetry install
 # 暴露端口（根据 README.md 中的说明）
 EXPOSE 8080
 
-# 设置启动命令（根据 pyproject.toml 中的脚本配置）
-CMD ["p115dav", "--host", "0.0.0.0", "--port", "8080"]
+# 设置默认的 cookies 文件路径
+ENV COOKIES_PATH=/app/115-cookies.txt
 
+# 设置启动命令（允许用户通过命令行参数覆盖默认配置）
+ENTRYPOINT ["p115dav"]
+CMD ["--host", "0.0.0.0", "--port", "8080"]
