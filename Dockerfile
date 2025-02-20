@@ -22,10 +22,10 @@ RUN pip install --no-cache-dir poetry
 RUN poetry config virtualenvs.create false
 
 # 安装项目依赖
-RUN poetry install --no-root --no-cache
+RUN poetry install --no-root
 
 # 安装项目本身
-RUN poetry install --no-cache
+RUN poetry install
 
 # 暴露端口（根据 README.md 中的说明）
 EXPOSE 8080
