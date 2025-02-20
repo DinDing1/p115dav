@@ -12,15 +12,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     liblz4-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# 复制项目文件（先复制 pyproject.toml 和 poetry.lock 以提高缓存效率）
-COPY pyproject.toml poetry.lock ./
+# 复制 pyproject.toml 文件
+COPY pyproject.toml ./
 
 # 安装 Poetry（不生成虚拟环境）
 RUN pip install --no-cache-dir poetry && \
     poetry config virtualenvs.create false
 
-# 安装项目依赖（启用 PEP 517 构建）
-RUN poetry install --no-root --no-interaction --no-ansi
+# 生成 poetry.lock 文件并安装项目依赖
+RUN poetry lock --no-update && \
+    poetry install --no-root --no-interaction --no-ansi
 
 # 复制项目代码
 COPY . .
