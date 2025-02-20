@@ -1,19 +1,26 @@
+# 使用 Python 3.12 作为基础镜像
 FROM python:3.12-slim
 
-# 安装系统依赖及配置环境
-RUN apt-get update && apt-get install -y --no-install-recommends gcc python3-dev \
-    && rm -rf /var/lib/apt/lists/*
-RUN pip install poetry --no-cache-dir \
-    && poetry config virtualenvs.create false
-
+# 设置工作目录
 WORKDIR /app
-COPY pyproject.toml poetry.lock* ./
+
+# 复制项目文件到容器中
+COPY . /app
+
+# 安装 Poetry（用于管理依赖）
+RUN pip install --no-cache-dir poetry
+
+# 配置 Poetry 不使用虚拟环境（将依赖安装到系统 Python 中）
+RUN poetry config virtualenvs.create false
 
 # 安装项目依赖
-RUN poetry install --no-dev --no-interaction
+RUN poetry install --no-root
 
-# 部署项目代码
-COPY p115dav/ p115dav/
+# 安装项目本身
+RUN poetry install
 
-EXPOSE 8000
-CMD ["p115dav", "--cookies-path", "/app/115-cookies.txt"]
+# 暴露端口（根据 README.md 中的说明）
+EXPOSE 8080
+
+# 设置启动命令（根据 pyproject.toml 中的脚本配置）
+CMD ["p115dav", "--host", "0.0.0.0", "--port", "8080"]
