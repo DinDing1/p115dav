@@ -4,13 +4,13 @@ FROM python:3.12-slim AS builder
 # 设置工作目录
 WORKDIR /app
 
-# 安装系统依赖（修正换行格式）
+# 安装系统依赖
 RUN apt-get update && apt-get install -y \
     curl \
     build-essential \
     liblz4-dev \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*  # 清理缓存
+    && rm -rf /var/lib/apt/lists/*
 
 # 安装 Poetry
 ENV POETRY_VERSION=1.8.2
@@ -19,6 +19,9 @@ ENV PATH="/root/.local/bin:$PATH"
 
 # 复制依赖文件
 COPY pyproject.toml poetry.lock* ./
+
+# 手动安装 lz4
+RUN pip install --no-cache-dir lz4>=4.5.0
 
 # 安装项目依赖
 RUN poetry config virtualenvs.create false \
