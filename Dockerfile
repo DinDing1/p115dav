@@ -14,7 +14,6 @@ RUN poetry install --no-dev --no-interaction
 
 # 部署项目代码
 COPY p115dav/ p115dav/
-COPY README.md LICENSE ./
 
 EXPOSE 8000
 CMD ["p115dav", "--cookies-path", "/app/115-cookies.txt"]
