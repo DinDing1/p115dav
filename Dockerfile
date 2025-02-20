@@ -1,36 +1,35 @@
-FROM python:3.12.7-slim-bookworm
-
-# 设置版本参数
-#ARG DAV_VERSION
-#ARG NANO_VERSION
-#ARG TINY_VERSION
-#ARG EMBY_VERSION
-#ARG ALIST_VERSION
-
-# 安装基础系统包和Python包
-RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir 
-        #p115dav==${DAV_VERSION} \
-        #p115nano302==${NANO_VERSION} \
-        #p115tiny302==${TINY_VERSION} \
-        #python-emby-proxy==${EMBY_VERSION} \
-        #alist_proxy==${ALIST_VERSION}
-
-# 创建配置目录
-RUN mkdir -p /config
+# 使用 Python 3.12 作为基础镜像
+FROM python:3.12-slim
 
 # 设置工作目录
 WORKDIR /app
 
-# 暴露端口
-EXPOSE 8090 8091
+# 复制项目文件到容器中
+COPY . /app
 
-# 设置环境变量
-ENV PYTHONUNBUFFERED=1
+# 安装系统依赖（包括编译工具）
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libssl-dev \
+    libffi-dev \
+    liblz4-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# # 设置动态入口
-# ENTRYPOINT ["python", "-m"]
+# 安装 Poetry（用于管理依赖）
+RUN pip install --no-cache-dir poetry
 
-# 设置默认启动命令为空，允许在运行时指定模块
-CMD [""]
+# 配置 Poetry 不使用虚拟环境（将依赖安装到系统 Python 中）
+RUN poetry config virtualenvs.create false
+
+# 安装项目依赖
+RUN poetry install --no-root
+
+# 安装项目本身
+RUN poetry install
+
+# 暴露端口（根据 README.md 中的说明）
+EXPOSE 8080
+
+# 设置启动命令（根据 pyproject.toml 中的脚本配置）
+CMD ["p115dav", "--host", "0.0.0.0", "--port", "8080"]
 
