@@ -28,4 +28,4 @@ EXPOSE 8091
 VOLUME ["/app/115-cookie.txt"]
 
 # 启动命令
-CMD ["python", "-m", "p115dav", "--host", "0.0.0.0", "--port", "8050"]
+CMD ["python", "-m", "p115dav", "--host", "0.0.0.0", "--port", "8091"]
