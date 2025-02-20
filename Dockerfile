@@ -7,11 +7,8 @@ WORKDIR /app
 # 复制项目文件到容器中
 COPY . .
 
-# 安装 Poetry
-RUN pip install poetry
-
-# 使用 Poetry 安装依赖
-RUN poetry install --no-root
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir \
 
 # 暴露端口 8000
 EXPOSE 8000
