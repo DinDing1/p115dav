@@ -19,9 +19,6 @@ COPY pyproject.toml ./
 RUN pip install --no-cache-dir poetry && \
     poetry config virtualenvs.create false
 
-# 生成 poetry.lock 文件并安装项目依赖
-RUN poetry lock --no-update && \
-    poetry install --no-root --no-interaction --no-ansi
 
 # 复制项目代码
 COPY . .
