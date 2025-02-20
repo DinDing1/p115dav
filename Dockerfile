@@ -1,41 +1,34 @@
-# 使用 Python 3.12 作为基础镜像
-FROM python:3.12-slim AS builder
+# 使用 Python 3.13.2-alpine 镜像
+FROM python:3.13.2-alpine
 
-# 设置工作目录
+# 设置阿里云镜像源
+#RUN pip config set global.index-url https://mirrors.aliyun.com/pypi/simple
+
+# 安装编译所需的工具和库
+RUN apk update && apk add --no-cache \
+    build-base \
+    lz4-libs \
+    openssl-dev \
+    zlib-dev \
+    python3-dev \
+    gcc \
+    libffi-dev \
+    libuv-dev
+
+# 升级 pip 并安装 setuptools 和 wheel
+RUN pip install --upgrade pip setuptools wheel
+
+# 创建工作目录
 WORKDIR /app
 
-# 安装系统依赖
-RUN apt-get update && apt-get install -y \
-    curl \
-    build-essential \
-    liblz4-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+# 安装依赖
+RUN pip install p115dav
 
-# 安装 Poetry
-ENV POETRY_VERSION=1.8.2
-RUN curl -sSL https://install.python-poetry.org | python3 -
-ENV PATH="/root/.local/bin:$PATH"
-
-# 复制依赖文件
-COPY pyproject.toml poetry.lock* ./
-
-# 手动安装 lz4
-RUN pip install --no-cache-dir lz4>=4.5.0
-
-# 安装项目依赖
-RUN poetry config virtualenvs.create false \
-    && poetry install --only main --no-interaction --no-ansi \
-        --no-cache \
-        --compile
-
-# 复制源代码
-COPY p115dav/ ./p115dav
-
-# 多阶段构建
-FROM python:3.12-slim
-WORKDIR /app
-COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
-COPY --from=builder /app /app
+# 暴露端口 8050
 EXPOSE 8050
-CMD ["python", "-m", "p115dav", "--host", "0.0.0.0", "--port", "8050"]
+
+# 挂载一个目录用来存储 cookie 文件
+VOLUME ["/app/cookies"]
+
+# 启动命令
+CMD ["python", "-m", "p115dav", "--host", "127.0.0.1", "--port", "8050"]
