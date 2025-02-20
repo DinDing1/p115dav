@@ -1,46 +1,20 @@
-# 构建阶段
-FROM python:3.12-slim as builder
-
-# 安装编译依赖
-RUN apt-get update && \
-    apt-get install -y \
-    gcc \
-    g++ \
-    libssl-dev \
-    libffi-dev \
-    liblz4-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
-
-# 安装 Poetry 和 export 插件
-RUN pip install --no-cache-dir poetry poetry-plugin-export
-
-# 复制依赖文件
-COPY pyproject.toml poetry.lock* ./
-
-# 导出 requirements.txt
-RUN poetry export -f requirements.txt --output requirements.txt --without-hashes
-
-# 运行时阶段
 FROM python:3.12-slim
 
+# 安装系统依赖及配置环境
+RUN apt-get update && apt-get install -y --no-install-recommends gcc python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+RUN pip install poetry --no-cache-dir \
+    && poetry config virtualenvs.create false
+
 WORKDIR /app
+COPY pyproject.toml poetry.lock* ./
 
-# 安装运行时系统依赖
-RUN apt-get update && \
-    apt-get install -y liblz4-1 && \
-    rm -rf /var/lib/apt/lists/*
+# 安装项目依赖
+RUN poetry install --no-dev --no-interaction
 
-# 从构建阶段复制 requirements.txt
-COPY --from=builder /app/requirements.txt .
-
-# 安装 Python 依赖
-RUN pip install --no-cache-dir -r requirements.txt
-
-# 复制项目代码
-COPY . .
+# 部署项目代码
+COPY p115dav/ p115dav/
+COPY README.md LICENSE ./
 
 EXPOSE 8000
-
 CMD ["p115dav", "--cookies-path", "/app/115-cookies.txt"]
