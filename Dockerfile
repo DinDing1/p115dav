@@ -4,13 +4,13 @@ FROM python:3.12-slim AS builder
 # 设置工作目录
 WORKDIR /app
 
-# 安装系统依赖
+# 安装系统依赖（修正换行格式）
 RUN apt-get update && apt-get install -y \
     curl \
-    build-essential \  # 编译工具
-    liblz4-dev \       # lz4 依赖
+    build-essential \
+    liblz4-dev \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*  # 清理缓存
 
 # 安装 Poetry
 ENV POETRY_VERSION=1.8.2
@@ -29,18 +29,10 @@ RUN poetry config virtualenvs.create false \
 # 复制源代码
 COPY p115dav/ ./p115dav
 
-# 多阶段构建：减小最终镜像大小
+# 多阶段构建
 FROM python:3.12-slim
-
-# 设置工作目录
 WORKDIR /app
-
-# 从构建阶段复制已安装的依赖
 COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 COPY --from=builder /app /app
-
-# 暴露端口
 EXPOSE 8050
-
-# 启动命令
 CMD ["python", "-m", "p115dav", "--host", "0.0.0.0", "--port", "8050"]
