@@ -1,39 +1,32 @@
-# 使用指定版本的 Python 3.12.7 镜像（基于 Debian 12 "Bookworm"）
-FROM python:3.12.7-slim-bookworm
+# 使用 Python 3.12 官方镜像
+FROM python:3.12-slim-bookworm
 
 # 设置工作目录
 WORKDIR /app
 
-# 安装系统依赖（编译工具 + lz4 系统库）
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libssl-dev \
-    libffi-dev \
-    liblz4-dev \
+# 安装系统依赖
+RUN apt-get update && apt-get install -y \
+    gcc \
+    python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# 复制 pyproject.toml 文件
-COPY pyproject.toml ./
-
-# 安装 Poetry（不生成虚拟环境）
+# 安装 poetry 并配置
 RUN pip install --no-cache-dir poetry && \
     poetry config virtualenvs.create false
 
+# 复制项目文件
+COPY ./p115dav/pyproject.toml ./p115dav/readme.md ./
+COPY ./p115dav/p115dav ./p115dav
 
-# 复制项目代码
-COPY . .
+# 安装项目依赖
+RUN poetry install --no-dev --no-interaction --no-ansi
 
-# 安装项目本身
-RUN poetry install --no-interaction --no-ansi
-
-# 环境变量配置
-ENV COOKIES_PATH=/app/115-cookies.txt \
-    PYTHONUNBUFFERED=1 \
-    PYTHONPATH=/app
+# 创建非root用户
+RUN useradd -m -u 1001 appuser
+USER appuser
 
 # 暴露端口
-EXPOSE 8080
+EXPOSE 8000
 
-# 启动命令
-ENTRYPOINT ["p115dav"]
-CMD ["--host", "0.0.0.0", "--port", "8080"]
+# 设置启动命令
+CMD ["p115dav", "--host", "0.0.0.0", "--port", "8000", "--cache-url"]
