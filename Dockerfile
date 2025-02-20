@@ -22,10 +22,10 @@ WORKDIR /app
 RUN pip install p115dav
 
 # 暴露端口 8050
-EXPOSE 8050
+EXPOSE 8091
 
 # 挂载一个目录用来存储 cookie 文件
-VOLUME ["/app/cookies"]
+VOLUME ["/app/115-cookie.txt"]
 
 # 启动命令
 CMD ["python", "-m", "p115dav", "--host", "0.0.0.0", "--port", "8050"]
