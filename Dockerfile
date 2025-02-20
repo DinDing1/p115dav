@@ -16,7 +16,7 @@ RUN pip install --no-cache-dir poetry && \
 
 # 复制项目文件
 COPY ./p115dav/pyproject.toml ./p115dav/readme.md ./
-COPY ./p115dav/p115dav ./p115dav
+COPY ./p115dav ./p115dav
 
 # 安装项目依赖
 RUN poetry install --no-dev --no-interaction --no-ansi
