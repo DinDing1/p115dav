@@ -1,7 +1,7 @@
 FROM python:3.12.7-slim-bookworm
 
 # 设置版本参数
-ARG DAV_VERSION
+#ARG DAV_VERSION
 #ARG NANO_VERSION
 #ARG TINY_VERSION
 #ARG EMBY_VERSION
@@ -9,8 +9,8 @@ ARG DAV_VERSION
 
 # 安装基础系统包和Python包
 RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir \
-        p115dav==${DAV_VERSION} 
+    && pip install --no-cache-dir 
+        #p115dav==${DAV_VERSION} \
         #p115nano302==${NANO_VERSION} \
         #p115tiny302==${TINY_VERSION} \
         #python-emby-proxy==${EMBY_VERSION} \
