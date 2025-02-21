@@ -5,7 +5,7 @@ FROM python:3.13.2-alpine
 WORKDIR /app
 
 # 安装项目依赖
-RUN pip install --no-cache-dir p115dav
+RUN pip install p115dav
 
 # 挂载一个目录用来存储 cookie 文件
 VOLUME ["/app/115-cookie.txt"]
