@@ -1,5 +1,5 @@
-# 使用Python 3.12 slim镜像
-FROM python:3.12-slim
+# 使用 Alpine 镜像作为基础
+FROM python:3.13.2-alpine
 
 # 安装运行时依赖 和 构建依赖（构建后删除）
 RUN apk update && apk add --no-cache \
