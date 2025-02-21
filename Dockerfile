@@ -29,8 +29,8 @@ WORKDIR /app
 # 挂载一个目录用来存储 cookie 文件
 VOLUME ["/app/115-cookie.txt"]
 
-# 暴露端口 8091
-EXPOSE 8091
+# 暴露端口 8090
+EXPOSE 8090
 
 # 启动命令
-CMD ["python", "-m", "p115dav", "--host", "0.0.0.0", "--port", "8091"]
+CMD ["python", "-m", "p115dav", "--host", "0.0.0.0", "--port", "8090"]
